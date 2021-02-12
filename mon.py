@@ -9,6 +9,10 @@ class Mon:
 
     def __init__(self):
 
+       
+        self.image = pygame.image.load("img/bobo.png")
+        
+
         self.timealive = 0
         self.age = 0
         self.stage = 0
@@ -142,8 +146,7 @@ class Mon:
 
     def __str__(self):
 
-        st = f"""
-        Maxlife:  {self.maxlife}
+        st = f"""    Maxlife:  {self.maxlife}
         Lifetime: {self.timealive}
         Health:   {self.health}
         Hunger:   {self.hunger}
@@ -153,10 +156,14 @@ class Mon:
         Pooed?:   {self.uncleanpoo}
         Alive:    {self.alive}
         Sick      {self.sick}
-        Fuckups:  {self.fuckups}
-        """
+        Fuckups:  {self.fuckups}"""
 
         return st
+
+    def splitStatus(self):
+        p1= str(self).split("\n")
+        return [p1[i].strip("\n") for i in range(len(p1))]
+
             
             
 
@@ -171,36 +178,6 @@ def clear():
 
 if __name__ == "__main__":
 
-
-    timescale=0.05
-    clear()
-    myMon = Mon()
-
-    scalex = 32
-    scaley = 32
-
-    pygame.init()
-    gamewin = pygame.display.set_mode((32*scalex,16*scaley))
-
-    background = pygame.rect.Rect( 0,0,scalex*32,scaley*16)
-    BG_COLOUR = (255,255,255)
-    gamewin.fill(BG_COLOUR)
-    pygame.display.flip()
-    
-
-    
-        
-    gameon = True
-    while gameon:
-
-       
-
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                gameon=False
-
-    
-        
-    pygame.quit()
+    pass
         
         
