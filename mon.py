@@ -3,14 +3,23 @@ import random
 import os
 import math
 import pygame
+import montype
+import monstage
 
 
 class Mon:
 
-    def __init__(self):
+    """ Mon class
 
-        self.image = pygame.image.load("img/bobo.png")
+        it sorta inits itself rn? i guess. 
 
+    """
+
+    def __init__(self,montype=montype.bobo):
+
+        #sets all the stats and shit for right now
+        self.montype = montype
+        self.sprites = montype.sprites
         self.timealive = 0
         self.age = 0
         self.stage = 0
@@ -23,33 +32,52 @@ class Mon:
         self.pooneed = 0
         self.health = 90
         self.sick = False
-        self.maxlife = 2400
+        self.maxlife = monstage.maxlife
         self.uncleanpoo = False
         self.fuckups = 0
-
-    def feed(self):
-        self.hunger -= 20
-        self.love += 2
-
-    def givePets(self):
-        self.love += 20
 
     def update(self):
 
         self.timealive += 1
 
-        #self.energy-=1
+        if not self.montype.stage.isEgg:
 
-        self.doHealth()
+            #self.energy-=1
 
-        if self.hunger < 50 or random.randint(0, (3 - int(self.hunger < 25))) == 1:
+            self.doHealth()
+            self.doHunger()
+            self.doPoo()
+            self.doLove()
+            
+            if self.montype.stage.canDie:
+                self.checkDeath()
+
+    def doPoo(self):
+
+        if self.pooneed > 60 or self.sick:
+
+            
+
+            self.poo()
+
+
+    def doLove(self):
+        if self.love < 25 and not self.fuckedlove:
+            self.fuckups += 1
+            self.fuckedlove = True
+
+        if self.love >= 85 and self.fuckedlove:
+            self.fuckedlove = False
+        
+        if self.love < 0:
+            self.love = 0
+
+    def doHunger(self):
+        rena = random.randint(0, (3 - int(self.hunger < 25)))
+        if self.hunger < 50 or self.sick or rena == 1:
             self.pooneed += 1
-            if self.pooneed > 100:
+            if self.pooneed >= 100:
                 self.pooneed = 100
-
-        if self.pooneed > 55 or self.sick:
-            if random.random() == self.pooneed/100:
-                self.poo()
 
         if self.hunger > 75:
             self.love -= 1
@@ -62,17 +90,6 @@ class Mon:
             self.hunger = 100
         if self.hunger < 0:
             self.hunger = 0
-        if self.love < 0:
-            self.love = 0
-
-        if self.love < 25 and not self.fuckedlove:
-            self.fuckups += 1
-            self.fuckedlove = True
-
-        if self.love >= 85 and self.fuckedlove:
-            self.fuckedlove = False
-
-        self.checkDeath()
 
     def doHealth(self):
         if random.randint(0, 8) == 1 or self.sick or (self.hunger > 77) or self.uncleanpoo:
@@ -110,9 +127,17 @@ class Mon:
         dieno = random.randint(1, math.ceil(chanceofdeath))
 
         doop = math.ceil(chanceofdeath)
-        print(f"Chance of die: {doop} Die?: {dieno}:1 so {dieno==1}")
+        #print(f"Chance of die: {doop} Die?: {dieno}:1 so {dieno==1}")
         if dieno == 1:
-            self.die()
+            if self.timealive>self.maxlife/8 and self.health<65:
+                self.die()
+
+    def feed(self):
+        self.hunger -= 20
+        self.love += 2
+
+    def givePets(self):
+        self.love += 20
 
     def cureSick(self):
 
@@ -132,6 +157,8 @@ class Mon:
         self.uncleanpoo = True
         self.pooneed = 0
         self.hunger += 10
+        if self.hunger > 100:
+            self.hunger = 100
         self.love -= 7
         self.fuckups += 1
 
